@@ -1,23 +1,24 @@
 package com.codeprogression.mvpb;
 
 import android.view.View;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 import org.assertj.android.api.Assertions;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import static org.junit.Assert.*;
-
-/**
- * Created by andrzej.biernacki on 2016-04-04.
- */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 22)
-//@Config(manifest = "build/intermediates/manifests/full/debug/AndroidManifest.xml")
 public class MainActivityTest {
+
+    @Before
+    public void setUp() throws Exception {
+
+    }
 
     @Test
     public void testSetupMainActivity() {
@@ -26,5 +27,24 @@ public class MainActivityTest {
         final View mainView = mainActivity.findViewById(R.id.main_view);
 
         Assertions.assertThat(mainView).isNotNull();
+    }
+
+    @Test
+    public void testButtonClicked() {
+        final MainActivity mainActivity = Robolectric.setupActivity(MainActivity.class);
+        //inject mockPresenter
+
+        final RelativeLayout mainView = (RelativeLayout) mainActivity.findViewById(R.id.main_view);
+
+        for (int i = 0; i < mainView.getChildCount(); i++) {
+            final View childAt = mainView.getChildAt(i);
+
+            if (childAt instanceof Button) {
+                childAt.performClick();
+                //verrify presenter is called
+
+            }
+        }
+
     }
 }

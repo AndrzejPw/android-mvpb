@@ -1,25 +1,23 @@
 package com.codeprogression.mvpb;
 
+import javax.inject.Inject;
+
 import android.content.Context;
-import android.databinding.BaseObservable;
 import android.databinding.DataBindingUtil;
-import android.databinding.ObservableInt;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RelativeLayout;
-
 import com.codeprogression.mvpb.databinding.MainViewBinding;
-
-import javax.inject.Inject;
 
 public class MainView extends RelativeLayout {
 
     @Inject
     MainPresenter presenter;
     private MainViewBinding binding;
-    private ViewModel viewModel;
+    private ListViewModel viewModel;
 
     public MainView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -32,11 +30,18 @@ public class MainView extends RelativeLayout {
         super.onAttachedToWindow();
         if (isInEditMode()) return;
         if (viewModel == null){
-            viewModel = new ViewModel();
+            viewModel = new ListViewModel();
+            final ListItemViewModel listItemViewModel = new ListItemViewModel("test");
+            viewModel.listItemViewModels.add(listItemViewModel);
         }
         binding = DataBindingUtil.bind(this);
         binding.setViewModel(viewModel);
         binding.setListener(this);
+
+        final Adapter adapter = new Adapter(viewModel.listItemViewModels);
+        binding.recyclerView.setAdapter(adapter);
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         presenter.attach(viewModel);
     }
 
@@ -76,14 +81,9 @@ public class MainView extends RelativeLayout {
 
         // update viewModel
         // update view-specific state
-        viewModel = new ViewModel();
+        viewModel = new ListViewModel();
         viewModel.number.set(ss.number);
     }
-
-    public static class ViewModel extends BaseObservable {
-        public final ObservableInt number = new ObservableInt();
-    }
-
 
     static class SavedState extends View.BaseSavedState {
 

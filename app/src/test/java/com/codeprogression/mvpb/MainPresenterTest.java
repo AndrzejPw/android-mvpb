@@ -8,12 +8,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MainPresenterTest {
 
     private MainPresenter presenter;
-    private MainView.ViewModel viewModel;
+    private ListViewModel viewModel;
 
     @Before
     public void setup(){
         presenter = new MainPresenter();
-        viewModel = new MainView.ViewModel();
+        viewModel = new ListViewModel();
     }
 
     @Test

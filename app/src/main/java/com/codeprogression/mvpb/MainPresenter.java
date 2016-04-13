@@ -1,12 +1,12 @@
 package com.codeprogression.mvpb;
 
+import javax.inject.Inject;
+
 import com.codeprogression.mvpb.core.BaseBindingPresenter;
 import com.codeprogression.mvpb.core.PerActivity;
 
-import javax.inject.Inject;
-
 @PerActivity
-public class MainPresenter extends BaseBindingPresenter<MainView.ViewModel> {
+public class MainPresenter extends BaseBindingPresenter<ListViewModel> {
 
     @Inject
     public MainPresenter() {
