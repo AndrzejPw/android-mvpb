@@ -1,4 +1,4 @@
-package com.codeprogression.mvpb;
+package com.codeprogression.mvpb.view;
 
 import javax.inject.Inject;
 
@@ -10,7 +10,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RelativeLayout;
+import com.codeprogression.mvpb.core.MyApplication;
+import com.codeprogression.mvpb.core.RecylerViewAdapter;
 import com.codeprogression.mvpb.databinding.MainViewBinding;
+import com.codeprogression.mvpb.model.MainPresenter;
+import com.codeprogression.mvpb.viewModel.ListItemViewModel;
+import com.codeprogression.mvpb.viewModel.ListViewModel;
 
 public class MainView extends RelativeLayout {
 
@@ -22,7 +27,8 @@ public class MainView extends RelativeLayout {
     public MainView(Context context, AttributeSet attrs) {
         super(context, attrs);
         if (isInEditMode()) return;
-        MainActivity.component().inject(this);
+        MyApplication.get(getContext()).getAppComponent().inject(this);
+
     }
 
     @Override
@@ -38,7 +44,7 @@ public class MainView extends RelativeLayout {
         binding.setViewModel(viewModel);
         binding.setListener(this);
 
-        final Adapter adapter = new Adapter(viewModel.listItemViewModels);
+        final RecylerViewAdapter<ListItemViewModel> adapter = new RecylerViewAdapter<>(viewModel.listItemViewModels);
         binding.recyclerView.setAdapter(adapter);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 

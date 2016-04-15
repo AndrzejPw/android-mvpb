@@ -3,6 +3,7 @@ package com.codeprogression.mvpb;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import com.codeprogression.mvpb.view.MainActivity;
 import org.assertj.android.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;

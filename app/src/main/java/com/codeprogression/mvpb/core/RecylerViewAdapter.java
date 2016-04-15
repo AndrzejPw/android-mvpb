@@ -1,4 +1,4 @@
-package com.codeprogression.mvpb;
+package com.codeprogression.mvpb.core;
 
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableArrayList;
@@ -7,15 +7,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.codeprogression.mvpb.R;
 
 /**
  * Created by andrzej.biernacki on 2016-04-12.
  */
-public class Adapter extends RecyclerView.Adapter<BindingViewHolder> {
+public class RecylerViewAdapter<VM> extends RecyclerView.Adapter<BindingViewHolder> {
 
-    private final ObservableArrayList<ListItemViewModel> listItemViewModels;
+    private final ObservableArrayList<VM> listItemViewModels;
 
-    public Adapter(final ObservableArrayList<ListItemViewModel> listItemViewModels) {
+    public RecylerViewAdapter(final ObservableArrayList<VM> listItemViewModels) {
         this.listItemViewModels = listItemViewModels;
     }
 

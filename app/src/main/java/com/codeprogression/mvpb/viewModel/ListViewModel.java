@@ -1,4 +1,4 @@
-package com.codeprogression.mvpb;
+package com.codeprogression.mvpb.viewModel;
 
 import android.databinding.BaseObservable;
 import android.databinding.ObservableArrayList;

@@ -1,4 +1,4 @@
-package com.codeprogression.mvpb;
+package com.codeprogression.mvpb.viewModel;
 
 /**
  * Created by andrzej.biernacki on 2016-04-12.
