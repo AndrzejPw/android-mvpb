@@ -3,6 +3,7 @@ package com.codeprogression.mvpb.model;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 import java.util.List;
 
@@ -11,8 +12,8 @@ import java.util.List;
  */
 public interface IMDBService {
 
-    @GET("s={searchText}")
-    Call<IMDBResponse> searchIMDB(@Path("searchText")String searchText);
+    @GET("/")
+    Call<IMDBResponse> searchIMDB(@Query("s") String searchText);
 }
 
 
