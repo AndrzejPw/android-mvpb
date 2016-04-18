@@ -6,14 +6,14 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 import javax.inject.Inject;
-
-import java.util.List;
+import java.util.ArrayList;
 
 import android.content.Context;
 import com.codeprogression.mvpb.core.BaseBindingPresenter;
 import com.codeprogression.mvpb.viewModel.ListItemViewModel;
 import com.codeprogression.mvpb.viewModel.ListViewModel;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 public class MainPresenter extends BaseBindingPresenter<ListViewModel> {
 
@@ -63,9 +63,12 @@ public class MainPresenter extends BaseBindingPresenter<ListViewModel> {
     }
 
     private void processIMDBResponse(IMDBResponse imdbResponse){
-        getViewModel().listItemViewModels.clear();
-        for (ImdbRecord record : imdbResponse.search) {
-            getViewModel().listItemViewModels.add(new ListItemViewModel(record.title));
+        //        getViewModel().listItemViewModels.clear();
+        final ArrayList<ListItemViewModel> tmpList = Lists.newArrayList();
+        for (ImdbRecord record : imdbResponse.Search) {
+            tmpList.add(new ListItemViewModel(record.Title));
         }
+
+        getViewModel().listItemViewModels.addAll(tmpList);
     }
 }

@@ -28,18 +28,14 @@ public class MainView extends RelativeLayout {
         super(context, attrs);
         if (isInEditMode()) return;
         MyApplication.get(getContext()).getAppComponent().inject(this);
-
+        initViewModel();
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (isInEditMode()) return;
-        if (viewModel == null){
-            viewModel = new ListViewModel();
-            final ListItemViewModel listItemViewModel = new ListItemViewModel("test");
-            viewModel.listItemViewModels.add(listItemViewModel);
-        }
+
         binding = DataBindingUtil.bind(this);
         binding.setViewModel(viewModel);
         binding.setListener(this);
@@ -49,6 +45,14 @@ public class MainView extends RelativeLayout {
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         presenter.attach(viewModel);
+    }
+
+    private void initViewModel() {
+        if (viewModel == null) {
+            viewModel = new ListViewModel();
+            final ListItemViewModel listItemViewModel = new ListItemViewModel("test");
+            viewModel.listItemViewModels.add(listItemViewModel);
+        }
     }
 
     @Override
