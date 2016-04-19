@@ -19,7 +19,6 @@ public class RecylerViewAdapter<VM> extends RecyclerView.Adapter<BindingViewHold
     public RecylerViewAdapter(final ObservableList<VM> listItemViewModels) {
         this.listItemViewModels = listItemViewModels;
         listItemViewModels.addOnListChangedCallback(new OnListChangedLister());
-        setHasStableIds(true);
     }
 
     @Override public BindingViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
@@ -49,21 +48,27 @@ public class RecylerViewAdapter<VM> extends RecyclerView.Adapter<BindingViewHold
         }
 
         @Override public void onItemRangeInserted(final ObservableList<VM> sender, final int positionStart, final int itemCount) {
-            for (int i = 0; i < itemCount; i++) {
-                notifyItemInserted(positionStart + i);
+            if (itemCount == 1) {
+                notifyItemInserted(positionStart);
+            } else {
+                notifyDataSetChanged();
             }
         }
 
         @Override public void onItemRangeMoved(final ObservableList<VM> sender, final int fromPosition, final int toPosition,
                 final int itemCount) {
-            for (int i = 0; i < itemCount; i++) {
-                notifyItemMoved(i + fromPosition, i + toPosition);
+            if (itemCount == 1) {
+                notifyItemMoved(fromPosition, toPosition);
+            } else {
+                notifyDataSetChanged();
             }
         }
 
         @Override public void onItemRangeRemoved(final ObservableList<VM> sender, final int positionStart, final int itemCount) {
-            for (int i = 0; i < itemCount; i++) {
-                notifyItemRemoved(i + positionStart);
+            if (itemCount == 1) {
+                notifyItemRemoved(positionStart);
+            } else {
+                notifyDataSetChanged();
             }
         }
     }

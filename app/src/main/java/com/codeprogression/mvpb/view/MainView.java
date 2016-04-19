@@ -45,6 +45,7 @@ public class MainView extends RelativeLayout {
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         presenter.attach(viewModel);
+        presenter.searchIMDB("fargo");
     }
 
     private void initViewModel() {
@@ -64,7 +65,11 @@ public class MainView extends RelativeLayout {
 
     public void add(View v) {
         // Use presenter for domain operations
-        presenter.add();
+        presenter.searchIMDB(binding.queryEditText.getText().toString());
+    }
+
+    public void loadMore(View view) {
+        presenter.loadMore();
     }
 
     @Override
@@ -74,7 +79,6 @@ public class MainView extends RelativeLayout {
         /* Save view-specific data (e.g., repeating view positions)
          * Save viewModel defaults
          */
-        superState.number = viewModel.number.get();
 
         return superState;
     }
@@ -92,7 +96,6 @@ public class MainView extends RelativeLayout {
         // update viewModel
         // update view-specific state
         viewModel = new ListViewModel();
-        viewModel.number.set(ss.number);
     }
 
     static class SavedState extends View.BaseSavedState {

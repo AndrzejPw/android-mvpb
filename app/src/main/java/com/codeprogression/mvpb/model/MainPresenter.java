@@ -23,29 +23,19 @@ public class MainPresenter extends BaseBindingPresenter<ListViewModel> {
 
     @Inject
     public MainPresenter(IMDBService imdbService, Context context) {
-//
         this.imdbService = imdbService;
         this.context = context;
     }
 
     @Override
     protected void load() {
-        if (getViewModel().number.get() < 10) {
-            getViewModel().number.set(10);
-        }
-
     }
 
-
-    public void add(){
-        int number = getViewModel().number.get() + 1;
-        getViewModel().number.set(number);
-        searchIMDB("fargo");
-    }
 
     public void searchIMDB(final String query) {
         if (Strings.isNullOrEmpty(query) || query.length() < 3) {
             getViewModel().listItemViewModels.clear();
+            return;
         }
         Call<IMDBResponse> call = imdbService.searchIMDB(query);
 
@@ -62,13 +52,19 @@ public class MainPresenter extends BaseBindingPresenter<ListViewModel> {
         Timber.d("IMDB called");
     }
 
-    private void processIMDBResponse(IMDBResponse imdbResponse){
+    void processIMDBResponse(IMDBResponse imdbResponse){
         //        getViewModel().listItemViewModels.clear();
         final ArrayList<ListItemViewModel> tmpList = Lists.newArrayList();
         for (ImdbRecord record : imdbResponse.Search) {
             tmpList.add(new ListItemViewModel(record.Title));
         }
-
         getViewModel().listItemViewModels.addAll(tmpList);
+        if (imdbResponse.totalResults > getViewModel().listItemViewModels.size()) {
+            getViewModel().hasMore.set(true);
+        }
+    }
+
+    public void loadMore() {
+
     }
 }

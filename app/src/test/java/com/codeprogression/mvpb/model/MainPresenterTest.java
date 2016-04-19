@@ -1,18 +1,18 @@
-package com.codeprogression.mvpb;
+package com.codeprogression.mvpb.model;
+
+import retrofit2.Call;
 
 import com.codeprogression.mvpb.model.IMDBService;
 import com.codeprogression.mvpb.model.MainPresenter;
 import com.codeprogression.mvpb.viewModel.ListItemViewModel;
 import com.codeprogression.mvpb.viewModel.ListViewModel;
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class MainPresenterTest {
 
@@ -23,15 +23,11 @@ public class MainPresenterTest {
     @Before
     public void setup(){
         imdbServiceMock = mock(IMDBService.class);
+        when(imdbServiceMock.searchIMDB(anyString())).thenReturn(mock(Call.class));
         presenter = new MainPresenter(imdbServiceMock, null);
         viewModel = new ListViewModel();
     }
 
-    @Test
-    public void smokeTest(){
-        presenter.attach(viewModel);
-        assertThat(viewModel.number.get()).isEqualTo(10);
-    }
 
     @Test
     public void searchIMDB_lessThan3CharsEntered_EmptyList(){
@@ -46,7 +42,6 @@ public class MainPresenterTest {
 
     @Test
     public void searchIMDB_QueryEntered_IMDBCalled(){
-        viewModel.listItemViewModels.add(new ListItemViewModel("a title"));
         presenter.attach(viewModel);
 
         presenter.searchIMDB("fargo");
@@ -55,23 +50,31 @@ public class MainPresenterTest {
     }
 
     @Test
-    public void test_presenterUpdatesViewModel(){
+    public void processImdbResult_partialList_HasMoreElements(){
         presenter.attach(viewModel);
-        presenter.add();
-        assertThat(viewModel.number.get()).isEqualTo(11);
+        IMDBResponse response = new IMDBResponse();
+        response.Response = true;
+        response.totalResults = 20;
+        response.Search = Lists.newArrayList(new ImdbRecord());
+
+        presenter.processIMDBResponse(response);
+
+        assertThat(viewModel.listItemViewModels).hasSize(1);
+        assertThat(viewModel.hasMore.get()).isTrue();
     }
 
     @Test
-    public void test_presenterResetsNumber(){
-        viewModel.number.set(1);
+    public void loadMoreResults_HasMore_SecondPageIsRequested(){
         presenter.attach(viewModel);
-        assertThat(viewModel.number.get()).isEqualTo(10);
+        viewModel.hasMore.set(true);
+        viewModel.totalElements = 5;
+        viewModel.listItemViewModels.add(new ListItemViewModel("title"));
+        viewModel.query = "fargo";
+        presenter.loadMore();
+
+        verify(imdbServiceMock).searchIMDB("fargo", 2);
+
     }
 
-    @Test
-    public void test_presenterDoesNotResetNumber(){
-        viewModel.number.set(15);
-        presenter.attach(viewModel);
-        assertThat(viewModel.number.get()).isEqualTo(15);
-    }
+
 }

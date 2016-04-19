@@ -12,8 +12,9 @@ import java.util.List;
  */
 public interface IMDBService {
 
-    @GET("/")
-    Call<IMDBResponse> searchIMDB(@Query("s") String searchText);
+    @GET("/") Call<IMDBResponse> searchIMDB(@Query("s") String searchText);
+
+    @GET("/") Call<IMDBResponse> searchIMDB(@Query("s") String searchText, @Query("page") int page);
 }
 
 
