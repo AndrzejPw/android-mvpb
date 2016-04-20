@@ -33,23 +33,8 @@ public class MainPresenter extends BaseBindingPresenter<ListViewModel> {
 
 
     public void searchIMDB(final String query) {
-        if (Strings.isNullOrEmpty(query) || query.length() < 3) {
-            getViewModel().listItemViewModels.clear();
-            return;
-        }
-        Call<IMDBResponse> call = imdbService.searchIMDB(query);
-
-        call.enqueue(new Callback<IMDBResponse>() {
-            @Override public void onResponse(final Call<IMDBResponse> call, final Response<IMDBResponse> response) {
-                processIMDBResponse(response.body());
-            }
-
-            @Override public void onFailure(final Call<IMDBResponse> call, final Throwable t) {
-                Timber.e("call to imdb with parameter %s failed", query);
-            }
-        });
-
-        Timber.d("IMDB called");
+        getViewModel().reset();
+        searchImdb(query, 0);
     }
 
     void processIMDBResponse(IMDBResponse imdbResponse){
@@ -62,9 +47,34 @@ public class MainPresenter extends BaseBindingPresenter<ListViewModel> {
         if (imdbResponse.totalResults > getViewModel().listItemViewModels.size()) {
             getViewModel().hasMore.set(true);
         }
+        getViewModel().pagesLoaded++;
     }
 
-    public void loadMore() {
+    public void searchImdb(final String query, int pageNumber) {
+        if (Strings.isNullOrEmpty(query) || query.length() < 3) {
+            getViewModel().listItemViewModels.clear();
+            return;
+        }
+        Call<IMDBResponse> call;
+        if (pageNumber == 0) {
+            call = imdbService.searchIMDB(query);
+        } else {
+            call = imdbService.searchIMDB(query, pageNumber);
+        }
+
+        call.enqueue(new Callback<IMDBResponse>() {
+            @Override public void onResponse(final Call<IMDBResponse> call, final Response<IMDBResponse> response) {
+                processIMDBResponse(response.body());
+            }
+
+            @Override public void onFailure(final Call<IMDBResponse> call, final Throwable t) {
+                Timber.e("call to imdb with parameter %s failed", query);
+            }
+        });
+
+        Timber.d("IMDB called");
+
 
     }
+
 }

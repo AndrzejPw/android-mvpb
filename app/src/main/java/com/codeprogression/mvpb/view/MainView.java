@@ -1,5 +1,7 @@
 package com.codeprogression.mvpb.view;
 
+import timber.log.Timber;
+
 import javax.inject.Inject;
 
 import android.content.Context;
@@ -7,6 +9,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -42,17 +45,42 @@ public class MainView extends RelativeLayout {
 
         final RecylerViewAdapter<ListItemViewModel> adapter = new RecylerViewAdapter<>(viewModel.listItemViewModels);
         binding.recyclerView.setAdapter(adapter);
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        binding.recyclerView.setLayoutManager(layoutManager);
+        binding.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
+        {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+            {
+                if(dy > 0) //check for scroll down
+                {
+                    visibleItemCount = layoutManager.getChildCount();
+                    totalItemCount = layoutManager.getItemCount();
+                    pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
+
+                    if (loading)
+                    {
+                        if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
+                        {
+                            loading = false;
+                            loadMore();
+                            //Do pagination.. i.e. fetch new data
+                        }
+                    }
+                }
+            }
+        });
 
         presenter.attach(viewModel);
-        presenter.searchIMDB("fargo");
     }
+    private boolean loading = true;
+    int pastVisiblesItems, visibleItemCount, totalItemCount;
+
+
 
     private void initViewModel() {
         if (viewModel == null) {
             viewModel = new ListViewModel();
-            final ListItemViewModel listItemViewModel = new ListItemViewModel("test");
-            viewModel.listItemViewModels.add(listItemViewModel);
         }
     }
 
@@ -63,13 +91,14 @@ public class MainView extends RelativeLayout {
         binding.unbind();
     }
 
-    public void add(View v) {
+    public void performSearch(View v) {
         // Use presenter for domain operations
         presenter.searchIMDB(binding.queryEditText.getText().toString());
     }
 
-    public void loadMore(View view) {
-        presenter.loadMore();
+
+    public void loadMore() {
+        presenter.searchImdb(binding.queryEditText.getText().toString(), viewModel.pagesLoaded + 1);
     }
 
     @Override

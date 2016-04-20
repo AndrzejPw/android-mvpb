@@ -2,8 +2,6 @@ package com.codeprogression.mvpb.model;
 
 import retrofit2.Call;
 
-import com.codeprogression.mvpb.model.IMDBService;
-import com.codeprogression.mvpb.model.MainPresenter;
 import com.codeprogression.mvpb.viewModel.ListItemViewModel;
 import com.codeprogression.mvpb.viewModel.ListViewModel;
 import com.google.common.collect.Lists;
@@ -24,6 +22,7 @@ public class MainPresenterTest {
     public void setup(){
         imdbServiceMock = mock(IMDBService.class);
         when(imdbServiceMock.searchIMDB(anyString())).thenReturn(mock(Call.class));
+        when(imdbServiceMock.searchIMDB(anyString(), anyInt())).thenReturn(mock(Call.class));
         presenter = new MainPresenter(imdbServiceMock, null);
         viewModel = new ListViewModel();
     }
@@ -50,7 +49,17 @@ public class MainPresenterTest {
     }
 
     @Test
-    public void processImdbResult_partialList_HasMoreElements(){
+    public void searchIMDB_SomeResultsLoaded_NewQueryErasesOldResults(){
+        presenter.attach(viewModel);
+        viewModel.listItemViewModels.add(new ListItemViewModel(""));
+
+        presenter.searchIMDB("fargo");
+
+        assertThat(viewModel.listItemViewModels).isEmpty();
+    }
+
+    @Test
+    public void processImdbResult_totalGreaterThanReturned_HasMoreElements(){
         presenter.attach(viewModel);
         IMDBResponse response = new IMDBResponse();
         response.Response = true;
@@ -61,16 +70,35 @@ public class MainPresenterTest {
 
         assertThat(viewModel.listItemViewModels).hasSize(1);
         assertThat(viewModel.hasMore.get()).isTrue();
+        assertThat(viewModel.pagesLoaded).isEqualTo(1);
+    }
+
+    @Test
+    public void processImdbResult_lastPageReturned_HasNoMoreElements(){
+        viewModel.listItemViewModels.add(new ListItemViewModel("first element"));//one item already in the list
+        viewModel.pagesLoaded = 1;//first page loaded
+        presenter.attach(viewModel);
+
+        IMDBResponse response = new IMDBResponse();
+        response.Response = true;
+        response.totalResults = 2;
+        response.Search = Lists.newArrayList(new ImdbRecord());
+
+        presenter.processIMDBResponse(response);
+
+        assertThat(viewModel.listItemViewModels).hasSize(2);
+        assertThat(viewModel.hasMore.get()).isFalse();
+        assertThat(viewModel.pagesLoaded).isEqualTo(2);
     }
 
     @Test
     public void loadMoreResults_HasMore_SecondPageIsRequested(){
         presenter.attach(viewModel);
         viewModel.hasMore.set(true);
-        viewModel.totalElements = 5;
+        viewModel.pagesLoaded = 1;
         viewModel.listItemViewModels.add(new ListItemViewModel("title"));
-        viewModel.query = "fargo";
-        presenter.loadMore();
+
+        presenter.searchImdb("fargo", 2);
 
         verify(imdbServiceMock).searchIMDB("fargo", 2);
 
