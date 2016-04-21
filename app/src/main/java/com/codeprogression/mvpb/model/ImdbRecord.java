@@ -6,4 +6,7 @@ package com.codeprogression.mvpb.model;
 public class ImdbRecord {
     public String Title;
     public String Year;
+    public String Poster;
+    public String imdbID;
+    public String Type;
 }

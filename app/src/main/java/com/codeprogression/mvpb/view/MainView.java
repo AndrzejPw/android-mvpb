@@ -14,11 +14,14 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RelativeLayout;
 import com.codeprogression.mvpb.core.MyApplication;
+import com.codeprogression.mvpb.core.PauseImageLoaderScrollListener;
 import com.codeprogression.mvpb.core.RecylerViewAdapter;
 import com.codeprogression.mvpb.databinding.MainViewBinding;
 import com.codeprogression.mvpb.model.MainPresenter;
 import com.codeprogression.mvpb.viewModel.ListItemViewModel;
 import com.codeprogression.mvpb.viewModel.ListViewModel;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
 public class MainView extends RelativeLayout {
 
@@ -29,7 +32,7 @@ public class MainView extends RelativeLayout {
 
     public MainView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        if (isInEditMode()) return;
+        if (isInEditMode()) { return; }
         MyApplication.get(getContext()).getAppComponent().inject(this);
         initViewModel();
     }
@@ -37,7 +40,7 @@ public class MainView extends RelativeLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if (isInEditMode()) return;
+        if (isInEditMode()) { return; }
 
         binding = DataBindingUtil.bind(this);
         binding.setViewModel(viewModel);
@@ -47,21 +50,17 @@ public class MainView extends RelativeLayout {
         binding.recyclerView.setAdapter(adapter);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         binding.recyclerView.setLayoutManager(layoutManager);
-        binding.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
-        {
+        binding.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
-            {
-                if(dy > 0) //check for scroll down
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0) //check for scroll down
                 {
                     visibleItemCount = layoutManager.getChildCount();
                     totalItemCount = layoutManager.getItemCount();
                     pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
 
-                    if (loading)
-                    {
-                        if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
-                        {
+                    if (loading) {
+                        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
                             loading = false;
                             loadMore();
                             //Do pagination.. i.e. fetch new data
@@ -70,13 +69,17 @@ public class MainView extends RelativeLayout {
                 }
             }
         });
+        boolean pauseOnScroll = true;
+        boolean pauseOnFling = false;
+        PauseImageLoaderScrollListener listener = new PauseImageLoaderScrollListener(ImageLoader.getInstance(), pauseOnScroll,
+                pauseOnFling);
+        binding.recyclerView.addOnScrollListener(listener);
 
         presenter.attach(viewModel);
     }
+
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
-
-
 
     private void initViewModel() {
         if (viewModel == null) {
@@ -95,7 +98,6 @@ public class MainView extends RelativeLayout {
         // Use presenter for domain operations
         presenter.searchIMDB(binding.queryEditText.getText().toString());
     }
-
 
     public void loadMore() {
         presenter.searchImdb(binding.queryEditText.getText().toString(), viewModel.pagesLoaded + 1);

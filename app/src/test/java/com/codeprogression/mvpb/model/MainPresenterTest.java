@@ -30,7 +30,7 @@ public class MainPresenterTest {
 
     @Test
     public void searchIMDB_lessThan3CharsEntered_EmptyList(){
-        viewModel.listItemViewModels.add(new ListItemViewModel("a title"));
+        viewModel.listItemViewModels.add(new ListItemViewModel("a title", ""));
         presenter.attach(viewModel);
 
         presenter.searchIMDB("fa");
@@ -51,7 +51,7 @@ public class MainPresenterTest {
     @Test
     public void searchIMDB_SomeResultsLoaded_NewQueryErasesOldResults(){
         presenter.attach(viewModel);
-        viewModel.listItemViewModels.add(new ListItemViewModel(""));
+        viewModel.listItemViewModels.add(new ListItemViewModel("", ""));
 
         presenter.searchIMDB("fargo");
 
@@ -75,7 +75,7 @@ public class MainPresenterTest {
 
     @Test
     public void processImdbResult_lastPageReturned_HasNoMoreElements(){
-        viewModel.listItemViewModels.add(new ListItemViewModel("first element"));//one item already in the list
+        viewModel.listItemViewModels.add(new ListItemViewModel("first element", ""));//one item already in the list
         viewModel.pagesLoaded = 1;//first page loaded
         presenter.attach(viewModel);
 
@@ -96,7 +96,7 @@ public class MainPresenterTest {
         presenter.attach(viewModel);
         viewModel.hasMore.set(true);
         viewModel.pagesLoaded = 1;
-        viewModel.listItemViewModels.add(new ListItemViewModel("title"));
+        viewModel.listItemViewModels.add(new ListItemViewModel("title", ""));
 
         presenter.searchImdb("fargo", 2);
 

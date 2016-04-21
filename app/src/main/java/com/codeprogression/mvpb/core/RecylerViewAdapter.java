@@ -29,7 +29,7 @@ public class RecylerViewAdapter<VM> extends RecyclerView.Adapter<BindingViewHold
 
     @Override public void onBindViewHolder(final BindingViewHolder holder, final int position) {
         holder.getBinding().setVariable(com.codeprogression.mvpb.BR.viewModel, listItemViewModels.get(position));
-        holder.getBinding().executePendingBindings();
+//        holder.getBinding().executePendingBindings();
     }
 
     @Override public int getItemCount() {

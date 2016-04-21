@@ -41,7 +41,7 @@ public class MainPresenter extends BaseBindingPresenter<ListViewModel> {
         //        getViewModel().listItemViewModels.clear();
         final ArrayList<ListItemViewModel> tmpList = Lists.newArrayList();
         for (ImdbRecord record : imdbResponse.Search) {
-            tmpList.add(new ListItemViewModel(record.Title));
+            tmpList.add(new ListItemViewModel(record.Title, record.Poster));
         }
         getViewModel().listItemViewModels.addAll(tmpList);
         if (imdbResponse.totalResults > getViewModel().listItemViewModels.size()) {
@@ -50,7 +50,7 @@ public class MainPresenter extends BaseBindingPresenter<ListViewModel> {
         getViewModel().pagesLoaded++;
     }
 
-    public void searchImdb(final String query, int pageNumber) {
+    public void searchImdb(final String query, final int pageNumber) {
         if (Strings.isNullOrEmpty(query) || query.length() < 3) {
             getViewModel().listItemViewModels.clear();
             return;
@@ -68,7 +68,7 @@ public class MainPresenter extends BaseBindingPresenter<ListViewModel> {
             }
 
             @Override public void onFailure(final Call<IMDBResponse> call, final Throwable t) {
-                Timber.e("call to imdb with parameter %s failed", query);
+                Timber.e("call to imdb with parameter query=%s, page=%s failed", query, pageNumber);
             }
         });
 
