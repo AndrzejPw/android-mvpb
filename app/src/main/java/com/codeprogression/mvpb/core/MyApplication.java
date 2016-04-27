@@ -4,10 +4,7 @@ import timber.log.Timber;
 
 import android.app.Application;
 import android.content.Context;
-import android.media.Image;
 import com.codeprogression.mvpb.BuildConfig;
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
-import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -42,7 +39,7 @@ public class MyApplication extends Application {
         ImageLoaderConfiguration.Builder config = new ImageLoaderConfiguration.Builder(this)
                 .defaultDisplayImageOptions(defaultOptions);
         if (BuildConfig.DEBUG) {
-            config.writeDebugLogs();
+            //            config.writeDebugLogs();
         }
         ImageLoader.getInstance().init(config.build());
     }

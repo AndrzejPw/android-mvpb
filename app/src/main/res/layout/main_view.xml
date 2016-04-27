@@ -14,7 +14,6 @@
 
     <com.codeprogression.mvpb.view.MainView android:id="@+id/main_view"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,14 +31,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:onClickListener="@{listener.performSearch}"
-            android:text="+" />
+            android:text="Search" />
 
         <EditText
             android:id="@+id/queryEditText"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            tools:text="example query"
             android:layout_alignParentLeft="true"
+            tools:text="example query"
             />
 
 

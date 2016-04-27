@@ -1,7 +1,5 @@
 package com.codeprogression.mvpb.view;
 
-import timber.log.Timber;
-
 import javax.inject.Inject;
 
 import android.content.Context;
@@ -21,7 +19,6 @@ import com.codeprogression.mvpb.model.MainPresenter;
 import com.codeprogression.mvpb.viewModel.ListItemViewModel;
 import com.codeprogression.mvpb.viewModel.ListViewModel;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
 public class MainView extends RelativeLayout {
 
@@ -59,9 +56,9 @@ public class MainView extends RelativeLayout {
                     totalItemCount = layoutManager.getItemCount();
                     pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
 
-                    if (loading) {
+                    if (!adapter.isNewItemsLoadingInBackground() && viewModel.hasMore.get()) {
                         if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
-                            loading = false;
+                            adapter.setNewItemsLoadingInBackground(true);
                             loadMore();
                             //Do pagination.. i.e. fetch new data
                         }
@@ -78,7 +75,6 @@ public class MainView extends RelativeLayout {
         presenter.attach(viewModel);
     }
 
-    private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
 
     private void initViewModel() {

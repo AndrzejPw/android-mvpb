@@ -77,6 +77,7 @@ public class MainPresenterTest {
     public void processImdbResult_lastPageReturned_HasNoMoreElements(){
         viewModel.listItemViewModels.add(new ListItemViewModel("first element", ""));//one item already in the list
         viewModel.pagesLoaded = 1;//first page loaded
+        viewModel.hasMore.set(true);
         presenter.attach(viewModel);
 
         IMDBResponse response = new IMDBResponse();
