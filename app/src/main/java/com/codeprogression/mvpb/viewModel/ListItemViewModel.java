@@ -12,6 +12,11 @@ public class ListItemViewModel {
 
     public ListItemViewModel(final String title, final String imageUri) {
         this.title = title;
-        this.imageUri = imageUri;
+        if (imageUri.equals("N/A")) {
+            this.imageUri = imageUri;
+        } else {
+            this.imageUri = null;
+        }
+
     }
 }

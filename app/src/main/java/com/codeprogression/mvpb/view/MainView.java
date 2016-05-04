@@ -12,13 +12,12 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RelativeLayout;
 import com.codeprogression.mvpb.core.MyApplication;
-import com.codeprogression.mvpb.core.PauseImageLoaderScrollListener;
+import com.codeprogression.mvpb.core.MyRecyclerView;
 import com.codeprogression.mvpb.core.RecylerViewAdapter;
 import com.codeprogression.mvpb.databinding.MainViewBinding;
 import com.codeprogression.mvpb.model.MainPresenter;
 import com.codeprogression.mvpb.viewModel.ListItemViewModel;
 import com.codeprogression.mvpb.viewModel.ListViewModel;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class MainView extends RelativeLayout {
 
@@ -45,37 +44,19 @@ public class MainView extends RelativeLayout {
 
         final RecylerViewAdapter<ListItemViewModel> adapter = new RecylerViewAdapter<>(viewModel.listItemViewModels);
         binding.recyclerView.setAdapter(adapter);
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        binding.recyclerView.setLayoutManager(layoutManager);
-        binding.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if (dy > 0) //check for scroll down
-                {
-                    visibleItemCount = layoutManager.getChildCount();
-                    totalItemCount = layoutManager.getItemCount();
-                    pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
-
-                    if (!adapter.isNewItemsLoadingInBackground() && viewModel.hasMore.get()) {
-                        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
-                            adapter.setNewItemsLoadingInBackground(true);
-                            loadMore();
-                            //Do pagination.. i.e. fetch new data
-                        }
-                    }
+        binding.recyclerView.setOnScrolledToEndOfListListener(new MyRecyclerView.OnScrolledToEndOfListListener() {
+            @Override public void onScrolledToBottomEnd(final MyRecyclerView myRecyclerView) {
+                if (!adapter.isNewItemsLoadingInBackground() && viewModel.hasMore.get()){
+                    adapter.setNewItemsLoadingInBackground(true);
+                    loadMore();
                 }
+
             }
         });
-        boolean pauseOnScroll = true;
-        boolean pauseOnFling = false;
-        PauseImageLoaderScrollListener listener = new PauseImageLoaderScrollListener(ImageLoader.getInstance(), pauseOnScroll,
-                pauseOnFling);
-        binding.recyclerView.addOnScrollListener(listener);
 
         presenter.attach(viewModel);
     }
 
-    int pastVisiblesItems, visibleItemCount, totalItemCount;
 
     private void initViewModel() {
         if (viewModel == null) {
